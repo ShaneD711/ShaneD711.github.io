@@ -1,0 +1,10 @@
+/* 文章卡片半透明 */
+#recent-posts > .recent-post-item,
+.layout > .recent-posts .recent-post-item,
+.layout > div:first-child:not(.recent-posts),
+#aside-content .card-widget,
+div#post,
+div#page,
+div#archive {
+    background: rgba(255, 255, 255, 0.9); /* 0.9 代表 90% 不透明度，你可以改成 0.8 */
+}
