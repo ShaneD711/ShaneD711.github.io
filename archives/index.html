@@ -399,6 +399,30 @@
                 <main class="main index-page">
             
         <article class="index-post">
+            <a class="abstract-title" href="/2025/11/24/%E8%A7%A3%E5%86%B3idea%E9%94%99%E8%AF%AF%E6%8F%90%E7%A4%BA-%E6%97%A0%E6%B3%95%E8%A7%A3%E6%9E%90-%E8%A1%A8%E5%90%8D/">
+                <span class="abstract-title-text">解决idea错误提示:无法解析&#39;表名&#39;</span>
+            </a>
+            <div class="abstract-content">
+                1. 问题现象Database 面板里已经成功连接了数据库，表都能看得到。
+SQL 代码（MyBatis XML 或 @Select 注解）本身没有语法错误，在数据库里执行也能跑通。
+但是IDEA 编辑器里，提示 Unable to resolve table &#39;xxx&#39;。
+
+2. 快速解决方案这个问题的根源在于 IDEA 不知道当前的代码文件应该对应哪个数据库连接。我们需要手动设置 SQL Resolution Scope（SQL 解析作用域）。
+
+3. 为什么会有这个问题？我明明设置了 SQL Dialect（方言），也连接了数据库，而且我只有一个数据库，IDEA 为...
+            </div>
+            <!-- read more -->
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2025/11/24">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2025/11/24</span>
+                </div>
+                <!-- tags -->
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+            
+        <article class="index-post">
             <a class="abstract-title" href="/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">
                 <span class="abstract-title-text">Hexo+Typora+PicGo搭建博客配置记录</span>
             </a>
@@ -480,15 +504,20 @@ Run server1$ hexo ...
     <!-- 在 ejs 中将 archive 按照时间排序 -->
         
         
+        
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 2
+        Total : 3
         </div>
         <!-- search  -->
     </div>
     <div class="post-archive">
             <div class="archive-year"> 2025 </div>
             <ul class="year-list">
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/24</span>
+            <a class="archive-post-title" href="/2025/11/24/%E8%A7%A3%E5%86%B3idea%E9%94%99%E8%AF%AF%E6%8F%90%E7%A4%BA-%E6%97%A0%E6%B3%95%E8%A7%A3%E6%9E%90-%E8%A1%A8%E5%90%8D/">解决idea错误提示:无法解析'表名'</a>
+        </li>
         <li class="archive-post-item">
             <span class="archive-post-date">11/21</span>
             <a class="archive-post-title" href="/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Hexo+Typora+PicGo搭建博客配置记录</a>
