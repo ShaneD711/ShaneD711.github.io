@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta property="og:type" content="website">
 <meta property="og:title" content="ShaneD711&#39;s Blog">
-<meta property="og:url" content="https://shaned711.github.io/archives/2025/index.html">
+<meta property="og:url" content="https://shaned711.github.io/archives/2025/12/index.html">
 <meta property="og:site_name" content="ShaneD711&#39;s Blog">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="ShaneD711">
@@ -416,104 +416,6 @@
                 <!-- date -->
                 <div class="abstract-date" title="Last updated: 2025/12/01">
                     <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2025/12/01</span>
-                </div>
-                <!-- tags -->
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-            
-        <article class="index-post">
-            <a class="abstract-title" href="/2025/11/28/BaseContext%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8-Service-%E5%B1%82%E2%80%9C%E9%9A%94%E7%A9%BA%E5%8F%96%E7%89%A9%E2%80%9D%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8D%E7%99%BB%E5%BD%95%E7%94%A8%E6%88%B7-ID%EF%BC%9F/">
-                <span class="abstract-title-text">BaseContext：如何在Service层“隔空取物”获取当前登录用户ID？</span>
-            </a>
-            <div class="abstract-content">
-                在做Spring Boot 的 Web 项目时，在 Controller 或 Service 层经常会看到这样一行代码： 
-12// 在 Service 层直接获取当前登录用户的ID Long userId = BaseContext.getCurrentId();
-
-这就很神奇了：
-
-没有传参：Controller 调用 Service 时，并没有把 userId 作为参数传进来
-没有查库：这一行代码也没有去查询数据库
-数据准确：它总是能精准地拿到当前发送请求的那个用户的 ID，张三发请求拿到张三，李四发请求拿到李四，互不干扰
-
-它是怎么做到的？
-有两个核心概念：ThreadLocal...
-            </div>
-            <!-- read more -->
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2025/11/28">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2025/11/28</span>
-                </div>
-                <!-- tags -->
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-            
-        <article class="index-post">
-            <a class="abstract-title" href="/2025/11/24/%E8%A7%A3%E5%86%B3idea%E9%94%99%E8%AF%AF%E6%8F%90%E7%A4%BA-%E6%97%A0%E6%B3%95%E8%A7%A3%E6%9E%90-%E8%A1%A8%E5%90%8D/">
-                <span class="abstract-title-text">解决idea错误提示:无法解析&#39;表名&#39;</span>
-            </a>
-            <div class="abstract-content">
-                1. 问题现象Database 面板里已经成功连接了数据库，表都能看得到。
-SQL 代码（MyBatis XML 或 @Select 注解）本身没有语法错误，在数据库里执行也能跑通。
-但是IDEA 编辑器里，提示 Unable to resolve table &#39;xxx&#39;。
-
-2. 快速解决方案这个问题的根源在于 IDEA 不知道当前的代码文件应该对应哪个数据库连接。我们需要手动设置 SQL Resolution Scope（SQL 解析作用域）。
-
-3. 为什么会有这个问题？我明明设置了 SQL Dialect（方言），也连接了数据库，而且我只有一个数据库，IDEA 为...
-            </div>
-            <!-- read more -->
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2025/11/24">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2025/11/24</span>
-                </div>
-                <!-- tags -->
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-            
-        <article class="index-post">
-            <a class="abstract-title" href="/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">
-                <span class="abstract-title-text">Hexo+Typora+PicGo搭建博客配置记录</span>
-            </a>
-            <div class="abstract-content">
-                Mac电脑配置一套写博客的环境,流程:
-1.搭建 Hexo 博客
-2.配置 PicGo + Typora 实现自动化写作
-准备工作：在做任何安装之前，先解决 Git 和终端的网络问题
-开启 Clash，查看端口是7897
-打开终端 (Terminal)，依次执行以下命令：
-123456789# 1. 让 Git 强制走代理 (解决连不上 GitHub)git config --global http.proxy http://127.0.0.1:7897git config --global https.proxy http://127.0.0.1:7897# 2. 让 Git 使用 H...
-            </div>
-            <!-- read more -->
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2025/11/21">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2025/11/21</span>
-                </div>
-                <!-- tags -->
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-            
-        <article class="index-post">
-            <a class="abstract-title" href="/2025/11/21/hello-world/">
-                <span class="abstract-title-text">Hello World</span>
-            </a>
-            <div class="abstract-content">
-                Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post1$ hexo new &quot;My New Post&quot;
-
-More info: Writing
-Run server1$ hexo ...
-            </div>
-            <!-- read more -->
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2025/11/21">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2025/11/21</span>
                 </div>
                 <!-- tags -->
             </div>
