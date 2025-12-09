@@ -399,6 +399,30 @@
                 <main class="main index-page">
             
         <article class="index-post">
+            <a class="abstract-title" href="/2025/12/09/Spring-Boot-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%8B%A6%E6%88%AA%E5%99%A8%E4%B8%8E-ThreadLocal-%E7%9A%84%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95%E6%A0%A1%E9%AA%8C/">
+                <span class="abstract-title-text">Spring Boot 实战：基于拦截器与 ThreadLocal 的用户登录校验</span>
+            </a>
+            <div class="abstract-content">
+                1. 背景与问题在无状态的 HTTP 协议下，Web 应用通常使用 Session 或 Token 机制来维持用户的登录状态。在 Spring Boot 后端开发中，面临两个核心问题：
+
+统一校验：如何在请求到达业务逻辑之前，统一拦截未登录请求，避免在每个 Controller 方法中重复编写校验代码？
+上下文共享：在 Controller、Service 甚至 Dao 层中，如何优雅地获取当前登录用户的信息，而不需要层层传递 User 对象参数？
+
+ 这里介绍登录 + 拦截器 (Interceptor) + 线程本地变量 (ThreadLocal)” 
+2. 架构设计该方案的流程如下：...
+            </div>
+            <!-- read more -->
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2025/12/09">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2025/12/09</span>
+                </div>
+                <!-- tags -->
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+            
+        <article class="index-post">
             <a class="abstract-title" href="/2025/12/03/%E8%A7%A3%E5%86%B3Rocky-Linux-9%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8Root%E7%94%A8%E6%88%B7SSH%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E7%9A%84%E9%97%AE%E9%A2%98/">
                 <span class="abstract-title-text">解决Rocky Linux 9无法使用Root用户SSH远程连接的问题</span>
             </a>
@@ -585,15 +609,20 @@ Run server1$ hexo ...
         
         
         
+        
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 6
+        Total : 7
         </div>
         <!-- search  -->
     </div>
     <div class="post-archive">
             <div class="archive-year"> 2025 </div>
             <ul class="year-list">
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/09</span>
+            <a class="archive-post-title" href="/2025/12/09/Spring-Boot-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%8B%A6%E6%88%AA%E5%99%A8%E4%B8%8E-ThreadLocal-%E7%9A%84%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95%E6%A0%A1%E9%AA%8C/">Spring Boot 实战：基于拦截器与 ThreadLocal 的用户登录校验</a>
+        </li>
         <li class="archive-post-item">
             <span class="archive-post-date">12/03</span>
             <a class="archive-post-title" href="/2025/12/03/%E8%A7%A3%E5%86%B3Rocky-Linux-9%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8Root%E7%94%A8%E6%88%B7SSH%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E7%9A%84%E9%97%AE%E9%A2%98/">解决Rocky Linux 9无法使用Root用户SSH远程连接的问题</a>
