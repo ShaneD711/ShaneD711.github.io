@@ -409,7 +409,7 @@
                 <span class="abstract-title-text">Spring Boot 实战：基于 Redis + Token 实现分布式登录系统</span>
             </a>
             <div class="abstract-content">
-                Spring Boot 实战：基于 Redis + Token 实现分布式登录1. 设计思路在分布式系统或前后端分离的架构中，我们需要一种无状态的登录方案。核心设计思路如下：
+                1. 设计思路在分布式系统或前后端分离的架构中，我们需要一种无状态的登录方案。核心设计思路如下：
 
 凭证机制：使用 Token（随机字符串）作为用户身份的唯一标识，替代传统的 Cookie。
 数据存储：将用户的登录状态（Token 与用户信息的映射）存储在 Redis 中，利用其高性能和自动过期机制。
@@ -418,7 +418,9 @@ Redis：作为服务端共享的“会话存储中心”。
 ThreadLocal：作为单次请求内的“上下文容器”，方便 Controller 和 Service 层获取用户信息。
 
 
-请求拦截：采用 双拦截器模...
+请求拦截：采用 双拦截器模式，分离“Token 刷新”与“登录鉴权”的职责。
+
+2. 代码实现2.1 步...
             </div>
             <!-- read more -->
             <div class="abstract-post-meta">
