@@ -10,25 +10,21 @@
     <meta name="copyright" content="ShaneD711">
         <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     <meta name="description" content="">
-    <meta name="description" content="Mac电脑配置一套写博客的环境,流程: 1.搭建 Hexo 博客 2.配置 PicGo + Typora 实现自动化写作 准备工作：在做任何安装之前，先解决 Git 和终端的网络问题 开启 Clash，查看端口是7897 打开终端 (Terminal)，依次执行以下命令： 123456789# 1. 让 Git 强制走代理 (解决连不上 GitHub)git config --global htt">
+    <meta name="description" content="一、 什么是缓存击穿？缓存击穿（Cache Breakdown） 是指一个热点 Key（比如某次秒杀活动的商品详情），在某个时间点过期了。恰好在这个时间点，有大量的并发请求访问这个 Key。这些请求发现缓存过期，瞬间全部打到数据库上，就像在防线上凿穿了一个洞，导致数据库压力激增甚至宕机。 核心特征： 高并发：访问量巨大。 热点 Key：大家都在查同一个数据。 瞬间失效：缓存 TTL 到期，数据物理">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo+Typora+PicGo搭建博客配置记录">
-<meta property="og:url" content="https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:title" content="Redis实战: 利用逻辑过期解决缓存击穿">
+<meta property="og:url" content="https://shaned711.github.io/2025/12/14/Redis%E5%AE%9E%E6%88%98-%E5%88%A9%E7%94%A8%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/index.html">
 <meta property="og:site_name" content="ShaneD711&#39;s Blog">
-<meta property="og:description" content="Mac电脑配置一套写博客的环境,流程: 1.搭建 Hexo 博客 2.配置 PicGo + Typora 实现自动化写作 准备工作：在做任何安装之前，先解决 Git 和终端的网络问题 开启 Clash，查看端口是7897 打开终端 (Terminal)，依次执行以下命令： 123456789# 1. 让 Git 强制走代理 (解决连不上 GitHub)git config --global htt">
+<meta property="og:description" content="一、 什么是缓存击穿？缓存击穿（Cache Breakdown） 是指一个热点 Key（比如某次秒杀活动的商品详情），在某个时间点过期了。恰好在这个时间点，有大量的并发请求访问这个 Key。这些请求发现缓存过期，瞬间全部打到数据库上，就像在防线上凿穿了一个洞，导致数据库压力激增甚至宕机。 核心特征： 高并发：访问量巨大。 热点 Key：大家都在查同一个数据。 瞬间失效：缓存 TTL 到期，数据物理">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212622352.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212944214.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212714270.png">
-<meta property="article:published_time" content="2025-11-21T12:31:38.000Z">
-<meta property="article:modified_time" content="2025-11-21T13:33:11.458Z">
+<meta property="article:published_time" content="2025-12-14T10:42:51.000Z">
+<meta property="article:modified_time" content="2025-12-14T11:01:47.625Z">
 <meta property="article:author" content="ShaneD711">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212622352.png">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="icon" href="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/Icons8-Windows-8-Logos-Google-Blog-Search.512.png">
-    <title>Hexo+Typora+PicGo搭建博客配置记录 · null</title>
+    <title>Redis实战: 利用逻辑过期解决缓存击穿 · null</title>
     <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
 /* This file is meant as a standalone workflow for
 - testing support for link[rel=preload]
@@ -246,7 +242,7 @@
             <a href="/">ShaneD711&#39;s Blog.</a>
         </div>
         <div class="post-title header-element">
-            <a href="#" class="post-name">Hexo+Typora+PicGo搭建博客配置记录</a>
+            <a href="#" class="post-name">Redis实战: 利用逻辑过期解决缓存击穿</a>
         </div>
     </div>
 </header>
@@ -273,7 +269,7 @@
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
-                Hexo+Typora+PicGo搭建博客配置记录
+                Redis实战: 利用逻辑过期解决缓存击穿
             <!-- 404 -->
         </h1>
         <!-- 副标题 -->
@@ -291,7 +287,7 @@
                 <div class="post-intro-meta">
                     <!-- 撰写日期 -->
                     <span class="iconfont-archer post-intro-calander">&#xe676;</span>
-                    <span class="post-intro-time">2025/11/21</span>
+                    <span class="post-intro-time">2025/12/14</span>
                     <!-- busuanzi -->
                         <span id="busuanzi_container_page_pv" class="busuanzi-pv">
                             <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
@@ -443,112 +439,68 @@
             <div class="container container-unloaded">
                 <main class="main post-page">
     <article class="article-entry">
-        <p>Mac电脑配置一套写博客的环境,流程:</p>
-<p>1.搭建 Hexo 博客</p>
-<p>2.配置 PicGo + Typora 实现自动化写作</p>
-<h2 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h2><p>在做任何安装之前，先解决 Git 和终端的网络问题</p>
-<p>开启 Clash，查看端口是7897</p>
-<p>打开终端 (Terminal)，依次执行以下命令：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 1. 让 Git 强制走代理 (解决连不上 GitHub)</span><br><span class="line">git config --global http.proxy http://127.0.0.1:7897</span><br><span class="line">git config --global https.proxy http://127.0.0.1:7897</span><br><span class="line"></span><br><span class="line"># 2. 让 Git 使用 HTTP/1.1 (解决 HTTP2 framing layer 报错)</span><br><span class="line">git config --global http.version HTTP/1.1</span><br><span class="line"></span><br><span class="line"># 3. 让 curl 也走 HTTP/1.1 (解决 Homebrew 下载报错)</span><br><span class="line">echo &quot;--http1.1&quot; &gt;&gt; ~/.curlrc</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="基础环境安装-Node-js-Git"><a href="#基础环境安装-Node-js-Git" class="headerlink" title="基础环境安装 (Node.js &amp; Git)"></a>基础环境安装 (Node.js &amp; Git)</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 1. 给当前终端挂上全局代理 (加速下载)</span><br><span class="line">export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897 all_proxy=http://127.0.0.1:7897</span><br><span class="line"></span><br><span class="line"># 2. 强制跳过更新，直接安装 Node.js</span><br><span class="line">HOMEBREW_NO_AUTO_UPDATE=1 brew install node</span><br><span class="line"></span><br><span class="line"># 3. 验证安装</span><br><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="搭建-Hexo-博客主体"><a href="#搭建-Hexo-博客主体" class="headerlink" title="搭建 Hexo 博客主体"></a>搭建 Hexo 博客主体</h2><p>把博客放在 <code>~/Documents/my-blog</code></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 1. 安装 Hexo 命令行工具</span><br><span class="line">npm install -g hexo-cli</span><br><span class="line"></span><br><span class="line"># 2. 初始化博客目录</span><br><span class="line">cd ~/Documents</span><br><span class="line">hexo init my-blog</span><br><span class="line"></span><br><span class="line"># 3. 进入目录并安装依赖</span><br><span class="line">cd my-blog</span><br><span class="line">npm install</span><br><span class="line"></span><br><span class="line"># 4. 安装 Git 推送插件</span><br><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="连接-GitHub-仓库"><a href="#连接-GitHub-仓库" class="headerlink" title="连接 GitHub 仓库"></a>连接 GitHub 仓库</h2><p><strong>在 GitHub 新建仓库 A</strong>：</p>
-<ul>
-<li>仓库名：<strong><code>用户名.github.io</code></strong> (例如 <code>ShaneD711.github.io</code>)</li>
-<li>权限：Public</li>
-</ul>
-<p><strong>修改 Hexo 配置</strong>：</p>
-<ul>
-<li>用 IDEA 打开 <code>my-blog</code> 目录。</li>
-<li>打开 <code>_config.yml</code>，拉到最底部，修改 <code>deploy</code> 部分：</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https://github.com/你的用户名/你的用户名.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
-
-<p>回到终端，执行</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo cl &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
-
-<p>成功后，访问 <code>https://你的用户名.github.io</code> 能看到网页</p>
-<h2 id="配置-PicGo-图床"><a href="#配置-PicGo-图床" class="headerlink" title="配置 PicGo 图床"></a>配置 PicGo 图床</h2><p>准备 GitHub 图片仓库</p>
-<ol>
-<li><strong>在 GitHub 新建仓库 B</strong>：<ul>
-<li>仓库名：<code>blog-imgs</code></li>
-<li>权限：Public</li>
-<li><strong>勾选 “Add a README file”</strong>。</li>
-</ul>
-</li>
-<li><strong>获取 Token</strong>：<ul>
-<li>GitHub -&gt; Settings -&gt; Developer settings -&gt; Personal access tokens (classic)。</li>
-<li>Generate new token -&gt; 勾选 <strong><code>repo</code></strong> -&gt; 生成并<strong>复制 Token</strong>。</li>
-</ul>
-</li>
+        <h2 id="一、-什么是缓存击穿？"><a href="#一、-什么是缓存击穿？" class="headerlink" title="一、 什么是缓存击穿？"></a>一、 什么是缓存击穿？</h2><p><strong>缓存击穿（Cache Breakdown）</strong> 是指一个<strong>热点 Key</strong>（比如某次秒杀活动的商品详情），在某个时间点<strong>过期</strong>了。恰好在这个时间点，有大量的并发请求访问这个 Key。这些请求发现缓存过期，瞬间全部打到数据库上，就像在防线上凿穿了一个洞，导致数据库压力激增甚至宕机。</p>
+<h3 id="核心特征："><a href="#核心特征：" class="headerlink" title="核心特征："></a>核心特征：</h3><ol>
+<li><strong>高并发</strong>：访问量巨大。</li>
+<li><strong>热点 Key</strong>：大家都在查同一个数据。</li>
+<li><strong>瞬间失效</strong>：缓存 TTL 到期，数据物理消失。</li>
 </ol>
-<p>安装 PicGo 并修复损坏提示</p>
-<ol>
-<li><p><strong>安装</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install --cask picgo</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>修复“应用已损坏”</strong> ：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo xattr -rd com.apple.quarantine /Applications/PicGo.app</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212622352.png" alt="image-20251121212622352"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212944214.png" alt="image-20251121212944214"></p>
-<p>Typora 接入</p>
-<ol>
-<li><p>打开 Typora -&gt; 设置 -&gt; 图像。</p>
-</li>
-<li><p><strong>插入图片时</strong>：选择“上传图片”。</p>
-</li>
-<li><p><strong>上传服务</strong>：选择 <code>PicGo.app</code>。</p>
-</li>
-<li><p>点击 <strong>“验证图片上传选项”</strong> 看到绿色的 <strong>Successfully</strong> 即可</p>
-<p><img src="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212714270.png" alt="image-20251121212714270"></p>
-</li>
-</ol>
-<h2 id="标准日常写作流程"><a href="#标准日常写作流程" class="headerlink" title="标准日常写作流程"></a>标准日常写作流程</h2><p><strong>新建</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~/Documents/my-blog</span><br><span class="line">hexo new &quot;文章标题&quot;</span><br></pre></td></tr></table></figure>
-
-<p><strong>写作</strong>：</p>
-<ul>
-<li>用 Typora 打开 <code>source/_posts/文章标题.md</code>。</li>
-<li><strong>截图 -&gt; 粘贴 (自动上传)</strong> -&gt; 写字 -&gt; 保存。</li>
+<h2 id="二、-互斥锁-逻辑过期"><a href="#二、-互斥锁-逻辑过期" class="headerlink" title="二、 互斥锁&amp;逻辑过期"></a>二、 互斥锁&amp;逻辑过期</h2><p>面对缓存击穿，通常有两种解法：</p>
+<h3 id="1-互斥锁（Mutex-Lock）"><a href="#1-互斥锁（Mutex-Lock）" class="headerlink" title="1. 互斥锁（Mutex Lock）"></a>1. 互斥锁（Mutex Lock）</h3><ul>
+<li><strong>思路</strong>：谁发现缓存过期了，谁就去抢一把锁。抢到锁的人去查数据库写缓存，其他人排队等待。</li>
+<li><strong>优点</strong>：数据强一致性（查到的绝对是新的）。</li>
+<li><strong>缺点</strong>：<strong>性能较差</strong>。所有人都得等那一个线程干完活，如果不巧那个线程挂了或慢了，后面就是灾难性的阻塞。</li>
 </ul>
-<p><strong>预览</strong> ：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+<h3 id="2-逻辑过期（Logical-Expiration）"><a href="#2-逻辑过期（Logical-Expiration）" class="headerlink" title="2. 逻辑过期（Logical Expiration）"></a>2. 逻辑过期（Logical Expiration）</h3><ul>
+<li><strong>思路</strong>：<strong>“永不过期”</strong>。不在 Redis 层面设置 TTL，而是把过期时间写在 Value 里面。发现“逻辑”过期后，<strong>先返回旧数据</strong>，然后<strong>异步</strong>开个线程去后台更新。</li>
+<li><strong>优点</strong>：<strong>高可用，性能极佳</strong>。用户永远不需要等待，拿了数据就走。</li>
+<li><strong>缺点</strong>：数据存在短暂的不一致（在重建完成前，用户看到的是旧数据）。</li>
+</ul>
+<h2 id="三、-逻辑过期的实现原理"><a href="#三、-逻辑过期的实现原理" class="headerlink" title="三、 逻辑过期的实现原理"></a>三、 逻辑过期的实现原理</h2><p>我们不使用 Redis 的 <code>setex</code> 来控制生死，而是引入一个包装类 <code>RedisData</code>，人为地记录一个 <code>expireTime</code>。</p>
+<h3 id="1-数据结构设计"><a href="#1-数据结构设计" class="headerlink" title="1. 数据结构设计"></a>1. 数据结构设计</h3><p>我们需要一个容器来封装真实的业务数据和逻辑过期时间：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Data</span><br><span class="line">public class RedisData &#123;</span><br><span class="line">    private LocalDateTime expireTime; // 逻辑过期时间</span><br><span class="line">    private Object data;              // 真实的业务数据（如 Shop 对象）</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><strong>发布</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo cl &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
+<h3 id="2-执行流程图解"><a href="#2-执行流程图解" class="headerlink" title="2. 执行流程图解"></a>2. 执行流程图解</h3><ol>
+<li><strong>查询缓存</strong>：从 Redis 取出数据（逻辑过期前提是数据必须预热，如果 Redis 没数据，直接返回空或降级）。</li>
+<li><strong>判断逻辑时间</strong>：<ul>
+<li>如果 <code>expireTime</code> &gt; <code>now()</code>：数据新鲜，直接返回。</li>
+<li>如果 <code>expireTime</code> &lt;&#x3D; <code>now()</code>：<strong>逻辑已过期</strong>。</li>
+</ul>
+</li>
+<li><strong>重建缓存</strong>：<ul>
+<li><strong>抢锁</strong>：尝试获取互斥锁。</li>
+<li><strong>抢锁失败</strong>：说明有人在更新了，<strong>不要等</strong>，直接返回旧数据。</li>
+<li><strong>抢锁成功</strong>：再次检查缓存是否已更新（Double Check）。如果没更新，则开启独立线程查库写缓存；如果已更新，直接释放锁并返回新数据。</li>
+</ul>
+</li>
+<li><strong>返回数据</strong>：无论是否抢到锁，主线程都直接返回数据（旧的或新的）。</li>
+</ol>
+<h2 id="四、-代码实现-Java"><a href="#四、-代码实现-Java" class="headerlink" title="四、 代码实现 (Java)"></a>四、 代码实现 (Java)</h2><p>以下是基于 SpringBoot + StringRedisTemplate 的完整实现，<strong>包含了二次检查（Double Check）逻辑</strong>。</p>
+<h3 id="1-缓存预热"><a href="#1-缓存预热" class="headerlink" title="1. 缓存预热"></a>1. 缓存预热</h3><p>因为 Redis 里没有 TTL，数据不会自己消失。我们需要在活动开始前把数据“预热”进去。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 预热数据到 Redis</span><br><span class="line"> * @param id 商品ID</span><br><span class="line"> * @param expireSeconds 逻辑过期时间（秒）</span><br><span class="line"> */</span><br><span class="line">public void saveShop2redis(Long id, Long expireSeconds) &#123;</span><br><span class="line">    // 1. 查询数据库</span><br><span class="line">    Shop shop = getById(id);</span><br><span class="line">    </span><br><span class="line">    // 2. 封装成 RedisData</span><br><span class="line">    RedisData redisData = new RedisData();</span><br><span class="line">    redisData.setData(shop);</span><br><span class="line">    // 重点：设置逻辑过期时间 = 当前时间 + 指定秒数 (注意单位是 PlusSeconds)</span><br><span class="line">    redisData.setExpireTime(LocalDateTime.now().plusSeconds(expireSeconds));</span><br><span class="line">    </span><br><span class="line">    // 3. 写入 Redis (不设置 TTL)</span><br><span class="line">    stringRedisTemplate.opsForValue().set(RedisConstants.CACHE_SHOP_KEY + id, JSONUtil.toJsonStr(redisData));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-业务逻辑-queryWithLogicalExpire"><a href="#2-业务逻辑-queryWithLogicalExpire" class="headerlink" title="2. 业务逻辑 (queryWithLogicalExpire)"></a>2. 业务逻辑 (queryWithLogicalExpire)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">// 线程池：用于异步重建缓存</span><br><span class="line">private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);</span><br><span class="line"></span><br><span class="line">public Shop queryWithLogicalExpire(Long id) &#123;</span><br><span class="line">    String key = RedisConstants.CACHE_SHOP_KEY + id;</span><br><span class="line">    </span><br><span class="line">    // 1. 从 Redis 查询</span><br><span class="line">    String shopJson = stringRedisTemplate.opsForValue().get(key);</span><br><span class="line">    </span><br><span class="line">    // 2. 如果未命中（未预热），直接返回 null</span><br><span class="line">    if (StrUtil.isBlank(shopJson)) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 3. 反序列化</span><br><span class="line">    RedisData redisData = JSONUtil.toBean(shopJson, RedisData.class);</span><br><span class="line">    JSONObject data = (JSONObject) redisData.getData();</span><br><span class="line">    Shop shop = JSONUtil.toBean(data, Shop.class);</span><br><span class="line">    LocalDateTime expireTime = redisData.getExpireTime();</span><br><span class="line"></span><br><span class="line">    // 4. 判断是否过期</span><br><span class="line">    if (expireTime.isAfter(LocalDateTime.now())) &#123;</span><br><span class="line">        // 未过期，直接返回</span><br><span class="line">        return shop;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // ==========================================================</span><br><span class="line">    // 5. 已过期，需要缓存重建</span><br><span class="line">    // ==========================================================</span><br><span class="line">    </span><br><span class="line">    String lockKey = RedisConstants.LOCK_SHOP_KEY + id;</span><br><span class="line">    // 6. 尝试获取互斥锁</span><br><span class="line">    boolean isLock = tryLock(lockKey);</span><br><span class="line">    </span><br><span class="line">    if (isLock) &#123;</span><br><span class="line">        // 6.1 获取锁成功</span><br><span class="line">        </span><br><span class="line">        // 【二次检查 (Double Check)】</span><br><span class="line">        // 再次查询 Redis，防止在上一个线程释放锁的瞬间，缓存已经被更新了</span><br><span class="line">        shopJson = stringRedisTemplate.opsForValue().get(key);</span><br><span class="line">        if (StrUtil.isNotBlank(shopJson)) &#123;</span><br><span class="line">             RedisData newRedisData = JSONUtil.toBean(shopJson, RedisData.class);</span><br><span class="line">             LocalDateTime newExpireTime = newRedisData.getExpireTime();</span><br><span class="line">             // 如果发现已经被更新（不过期了）</span><br><span class="line">             if (newExpireTime.isAfter(LocalDateTime.now())) &#123;</span><br><span class="line">                 // 释放锁，直接返回新数据，不再开启线程重建</span><br><span class="line">                 unlock(lockKey);</span><br><span class="line">                 return JSONUtil.toBean((JSONObject) newRedisData.getData(), Shop.class);</span><br><span class="line">             &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        // 6.2 确认依然过期，开启独立线程重建</span><br><span class="line">        CACHE_REBUILD_EXECUTOR.submit(() -&gt; &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                // 重建缓存（假设逻辑过期时间 20秒）</span><br><span class="line">                this.saveShop2redis(id, 20L);</span><br><span class="line">            &#125; catch (Exception e) &#123;</span><br><span class="line">                e.printStackTrace(); // 建议使用 log.error</span><br><span class="line">            &#125; finally &#123;</span><br><span class="line">                // 释放锁</span><br><span class="line">                unlock(lockKey);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 7. 【核心】无论是否抢到锁，都直接返回旧数据，绝不等待！</span><br><span class="line">    return shop;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 辅助方法：获取锁</span><br><span class="line">private boolean tryLock(String key) &#123;</span><br><span class="line">    Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key, &quot;1&quot;, 10, TimeUnit.SECONDS);</span><br><span class="line">    return BooleanUtil.isTrue(flag);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 辅助方法：释放锁</span><br><span class="line">private void unlock(String key) &#123;</span><br><span class="line">    stringRedisTemplate.delete(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="五、-总结"><a href="#五、-总结" class="headerlink" title="五、 总结"></a>五、 总结</h2><h3 id="1-为什么选择逻辑过期？"><a href="#1-为什么选择逻辑过期？" class="headerlink" title="1. 为什么选择逻辑过期？"></a>1. 为什么选择逻辑过期？</h3><p>逻辑过期本质上是一种**“妥协的艺术”**。它牺牲了短暂的数据一致性（用户可能在几百毫秒内看到旧数据），换取了系统在极高并发下的稳定性（Redis 永不阻塞，数据库压力极小）。</p>
+<h3 id="2-为什么要做二次检查-Double-Check-？"><a href="#2-为什么要做二次检查-Double-Check-？" class="headerlink" title="2. 为什么要做二次检查 (Double Check)？"></a>2. 为什么要做二次检查 (Double Check)？</h3><p>如果不加二次检查，在高并发下，线程 B 可能会在线程 A 重建完刚刚释放锁的时候抢到锁。此时线程 B 以为数据还过期，会再次开启线程去查库。虽然不影响正确性，但浪费了性能。加上二次检查可以避免不必要的重建。</p>
 
     </article>
     <!-- license -->
         <div class="license-wrapper">
             <p>Author：<a href="https://shaned711.github.io">ShaneD711</a>
-            <p>Link：<a href="https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/</a>
-            <p>Publish date：<a href="https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">November 21st 2025, 8:31:38 pm</a>
-            <p>Update date：<a href="https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">November 21st 2025, 9:33:11 pm</a>
+            <p>Link：<a href="https://shaned711.github.io/2025/12/14/Redis%E5%AE%9E%E6%88%98-%E5%88%A9%E7%94%A8%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/">https://shaned711.github.io/2025/12/14/Redis%E5%AE%9E%E6%88%98-%E5%88%A9%E7%94%A8%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/</a>
+            <p>Publish date：<a href="https://shaned711.github.io/2025/12/14/Redis%E5%AE%9E%E6%88%98-%E5%88%A9%E7%94%A8%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/">December 14th 2025, 6:42:51 pm</a>
+            <p>Update date：<a href="https://shaned711.github.io/2025/12/14/Redis%E5%AE%9E%E6%88%98-%E5%88%A9%E7%94%A8%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/">December 14th 2025, 7:01:47 pm</a>
             <p>License：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     <!-- paginator -->
     <ul class="post-paginator">
         <li class="next">
-                <div class="nextSlogan">Next Post</div>
-                <a href="/2025/11/24/%E8%A7%A3%E5%86%B3idea%E9%94%99%E8%AF%AF%E6%8F%90%E7%A4%BA-%E6%97%A0%E6%B3%95%E8%A7%A3%E6%9E%90-%E8%A1%A8%E5%90%8D/" title="解决idea错误提示:无法解析'表名'">
-                    <div class="nextTitle">解决idea错误提示:无法解析'表名'</div>
-                </a>
         </li>
         <li class="previous">
                 <div class="prevSlogan">Previous Post</div>
-                <a href="/2025/11/21/hello-world/" title="Hello World">
-                    <div class="prevTitle">Hello World</div>
+                <a href="/2025/12/10/Spring-Boot-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%9F%BA%E4%BA%8E-Redis-Token-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/" title="Spring Boot 实战：基于 Redis + Token 实现分布式登录系统">
+                    <div class="prevTitle">Spring Boot 实战：基于 Redis + Token 实现分布式登录系统</div>
                 </a>
         </li>
     </ul>
@@ -600,7 +552,7 @@
                 <div class="toc-catalog">
                     <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
                 </div>
-                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">准备工作：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85-Node-js-Git"><span class="toc-number">2.</span> <span class="toc-text">基础环境安装 (Node.js &amp; Git)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA-Hexo-%E5%8D%9A%E5%AE%A2%E4%B8%BB%E4%BD%93"><span class="toc-number">3.</span> <span class="toc-text">搭建 Hexo 博客主体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5-GitHub-%E4%BB%93%E5%BA%93"><span class="toc-number">4.</span> <span class="toc-text">连接 GitHub 仓库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-PicGo-%E5%9B%BE%E5%BA%8A"><span class="toc-number">5.</span> <span class="toc-text">配置 PicGo 图床</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E6%97%A5%E5%B8%B8%E5%86%99%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">6.</span> <span class="toc-text">标准日常写作流程</span></a></li></ol>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81-%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">一、 什么是缓存击穿？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%89%B9%E5%BE%81%EF%BC%9A"><span class="toc-number">1.1.</span> <span class="toc-text">核心特征：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81-%E4%BA%92%E6%96%A5%E9%94%81-%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F"><span class="toc-number">2.</span> <span class="toc-text">二、 互斥锁&amp;逻辑过期</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BA%92%E6%96%A5%E9%94%81%EF%BC%88Mutex-Lock%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">1. 互斥锁（Mutex Lock）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F%EF%BC%88Logical-Expiration%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">2. 逻辑过期（Logical Expiration）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81-%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">三、 逻辑过期的实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.1.</span> <span class="toc-text">1. 数据结构设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE%E8%A7%A3"><span class="toc-number">3.2.</span> <span class="toc-text">2. 执行流程图解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0-Java"><span class="toc-number">4.</span> <span class="toc-text">四、 代码实现 (Java)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%BC%93%E5%AD%98%E9%A2%84%E7%83%AD"><span class="toc-number">4.1.</span> <span class="toc-text">1. 缓存预热</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91-queryWithLogicalExpire"><span class="toc-number">4.2.</span> <span class="toc-text">2. 业务逻辑 (queryWithLogicalExpire)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81-%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">五、 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F%EF%BC%9F"><span class="toc-number">5.1.</span> <span class="toc-text">1. 为什么选择逻辑过期？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%81%9A%E4%BA%8C%E6%AC%A1%E6%A3%80%E6%9F%A5-Double-Check-%EF%BC%9F"><span class="toc-number">5.2.</span> <span class="toc-text">2. 为什么要做二次检查 (Double Check)？</span></a></li></ol></li></ol>
             </div>
         <!-- sidebar -->
         <div class="sidebar sidebar-hide">
