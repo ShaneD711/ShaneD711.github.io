@@ -10,25 +10,21 @@
     <meta name="copyright" content="ShaneD711">
         <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     <meta name="description" content="">
-    <meta name="description" content="Mac电脑配置一套写博客的环境,流程: 1.搭建 Hexo 博客 2.配置 PicGo + Typora 实现自动化写作 准备工作：在做任何安装之前，先解决 Git 和终端的网络问题 开启 Clash，查看端口是7897 打开终端 (Terminal)，依次执行以下命令： 123456789# 1. 让 Git 强制走代理 (解决连不上 GitHub)git config --global htt">
+    <meta name="description" content="一、 业务背景在“优惠券秒杀”场景中，为了防止用户恶意刷单、保障活动公平性，业务规则强制要求：同一个用户 ID 对同一张优惠券只能下单一次。 在低并发场景下，这是一个简单的“查询校验 -&gt; 扣减库存 -&gt; 创建订单”的串行逻辑。但在高并发场景下，如果两个线程同时进入“查询”阶段，都会判定当前用户未下单，从而同时执行后续的创建订单逻辑，导致数据库中产生同一用户的多条订单，违背了业务规则。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo+Typora+PicGo搭建博客配置记录">
-<meta property="og:url" content="https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:title" content="Redis实战: “一人一单”功能的实现逻辑与从单体到集群的并发问题">
+<meta property="og:url" content="https://shaned711.github.io/2025/12/17/Redis%E5%AE%9E%E6%88%98-%E5%8D%95%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E4%B8%80%E4%BA%BA%E4%B8%80%E5%8D%95%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="ShaneD711&#39;s Blog">
-<meta property="og:description" content="Mac电脑配置一套写博客的环境,流程: 1.搭建 Hexo 博客 2.配置 PicGo + Typora 实现自动化写作 准备工作：在做任何安装之前，先解决 Git 和终端的网络问题 开启 Clash，查看端口是7897 打开终端 (Terminal)，依次执行以下命令： 123456789# 1. 让 Git 强制走代理 (解决连不上 GitHub)git config --global htt">
+<meta property="og:description" content="一、 业务背景在“优惠券秒杀”场景中，为了防止用户恶意刷单、保障活动公平性，业务规则强制要求：同一个用户 ID 对同一张优惠券只能下单一次。 在低并发场景下，这是一个简单的“查询校验 -&gt; 扣减库存 -&gt; 创建订单”的串行逻辑。但在高并发场景下，如果两个线程同时进入“查询”阶段，都会判定当前用户未下单，从而同时执行后续的创建订单逻辑，导致数据库中产生同一用户的多条订单，违背了业务规则。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212622352.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212944214.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212714270.png">
-<meta property="article:published_time" content="2025-11-21T12:31:38.000Z">
-<meta property="article:modified_time" content="2025-11-21T13:33:11.458Z">
+<meta property="article:published_time" content="2025-12-17T07:56:06.000Z">
+<meta property="article:modified_time" content="2025-12-17T08:08:45.115Z">
 <meta property="article:author" content="ShaneD711">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212622352.png">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="icon" href="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/Icons8-Windows-8-Logos-Google-Blog-Search.512.png">
-    <title>Hexo+Typora+PicGo搭建博客配置记录 · null</title>
+    <title>Redis实战: “一人一单”功能的实现逻辑与从单体到集群的并发问题 · null</title>
     <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
 /* This file is meant as a standalone workflow for
 - testing support for link[rel=preload]
@@ -246,7 +242,7 @@
             <a href="/">ShaneD711&#39;s Blog.</a>
         </div>
         <div class="post-title header-element">
-            <a href="#" class="post-name">Hexo+Typora+PicGo搭建博客配置记录</a>
+            <a href="#" class="post-name">Redis实战: “一人一单”功能的实现逻辑与从单体到集群的并发问题</a>
         </div>
     </div>
 </header>
@@ -273,7 +269,7 @@
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
-                Hexo+Typora+PicGo搭建博客配置记录
+                Redis实战: “一人一单”功能的实现逻辑与从单体到集群的并发问题
             <!-- 404 -->
         </h1>
         <!-- 副标题 -->
@@ -291,7 +287,7 @@
                 <div class="post-intro-meta">
                     <!-- 撰写日期 -->
                     <span class="iconfont-archer post-intro-calander">&#xe676;</span>
-                    <span class="post-intro-time">2025/11/21</span>
+                    <span class="post-intro-time">2025/12/17</span>
                     <!-- busuanzi -->
                         <span id="busuanzi_container_page_pv" class="busuanzi-pv">
                             <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
@@ -443,112 +439,87 @@
             <div class="container container-unloaded">
                 <main class="main post-page">
     <article class="article-entry">
-        <p>Mac电脑配置一套写博客的环境,流程:</p>
-<p>1.搭建 Hexo 博客</p>
-<p>2.配置 PicGo + Typora 实现自动化写作</p>
-<h2 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h2><p>在做任何安装之前，先解决 Git 和终端的网络问题</p>
-<p>开启 Clash，查看端口是7897</p>
-<p>打开终端 (Terminal)，依次执行以下命令：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 1. 让 Git 强制走代理 (解决连不上 GitHub)</span><br><span class="line">git config --global http.proxy http://127.0.0.1:7897</span><br><span class="line">git config --global https.proxy http://127.0.0.1:7897</span><br><span class="line"></span><br><span class="line"># 2. 让 Git 使用 HTTP/1.1 (解决 HTTP2 framing layer 报错)</span><br><span class="line">git config --global http.version HTTP/1.1</span><br><span class="line"></span><br><span class="line"># 3. 让 curl 也走 HTTP/1.1 (解决 Homebrew 下载报错)</span><br><span class="line">echo &quot;--http1.1&quot; &gt;&gt; ~/.curlrc</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="基础环境安装-Node-js-Git"><a href="#基础环境安装-Node-js-Git" class="headerlink" title="基础环境安装 (Node.js &amp; Git)"></a>基础环境安装 (Node.js &amp; Git)</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 1. 给当前终端挂上全局代理 (加速下载)</span><br><span class="line">export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897 all_proxy=http://127.0.0.1:7897</span><br><span class="line"></span><br><span class="line"># 2. 强制跳过更新，直接安装 Node.js</span><br><span class="line">HOMEBREW_NO_AUTO_UPDATE=1 brew install node</span><br><span class="line"></span><br><span class="line"># 3. 验证安装</span><br><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="搭建-Hexo-博客主体"><a href="#搭建-Hexo-博客主体" class="headerlink" title="搭建 Hexo 博客主体"></a>搭建 Hexo 博客主体</h2><p>把博客放在 <code>~/Documents/my-blog</code></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 1. 安装 Hexo 命令行工具</span><br><span class="line">npm install -g hexo-cli</span><br><span class="line"></span><br><span class="line"># 2. 初始化博客目录</span><br><span class="line">cd ~/Documents</span><br><span class="line">hexo init my-blog</span><br><span class="line"></span><br><span class="line"># 3. 进入目录并安装依赖</span><br><span class="line">cd my-blog</span><br><span class="line">npm install</span><br><span class="line"></span><br><span class="line"># 4. 安装 Git 推送插件</span><br><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="连接-GitHub-仓库"><a href="#连接-GitHub-仓库" class="headerlink" title="连接 GitHub 仓库"></a>连接 GitHub 仓库</h2><p><strong>在 GitHub 新建仓库 A</strong>：</p>
-<ul>
-<li>仓库名：<strong><code>用户名.github.io</code></strong> (例如 <code>ShaneD711.github.io</code>)</li>
-<li>权限：Public</li>
-</ul>
-<p><strong>修改 Hexo 配置</strong>：</p>
-<ul>
-<li>用 IDEA 打开 <code>my-blog</code> 目录。</li>
-<li>打开 <code>_config.yml</code>，拉到最底部，修改 <code>deploy</code> 部分：</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https://github.com/你的用户名/你的用户名.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
-
-<p>回到终端，执行</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo cl &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
-
-<p>成功后，访问 <code>https://你的用户名.github.io</code> 能看到网页</p>
-<h2 id="配置-PicGo-图床"><a href="#配置-PicGo-图床" class="headerlink" title="配置 PicGo 图床"></a>配置 PicGo 图床</h2><p>准备 GitHub 图片仓库</p>
+        <h2 id="一、-业务背景"><a href="#一、-业务背景" class="headerlink" title="一、 业务背景"></a>一、 业务背景</h2><p>在“优惠券秒杀”场景中，为了防止用户恶意刷单、保障活动公平性，业务规则强制要求：<strong>同一个用户 ID 对同一张优惠券只能下单一次</strong>。</p>
+<p>在低并发场景下，这是一个简单的“查询校验 -&gt; 扣减库存 -&gt; 创建订单”的串行逻辑。但在高并发场景下，如果两个线程同时进入“查询”阶段，都会判定当前用户未下单，从而同时执行后续的创建订单逻辑，导致数据库中产生同一用户的多条订单，违背了业务规则。</p>
+<p>本文将复盘该功能在<strong>单体架构</strong>下的实现细节，以及随着架构升级为<strong>集群部署</strong>后，并发问题是如何再次出现并最终通过<strong>分布式锁</strong>解决的。</p>
+<h2 id="二、-单体架构下的解决方案"><a href="#二、-单体架构下的解决方案" class="headerlink" title="二、 单体架构下的解决方案"></a>二、 单体架构下的解决方案</h2><p>在项目初期，服务采用单节点部署（单个 JVM）。为了解决并发安全问题，我利用 Java 原生的 <code>synchronized</code> 关键字实现了互斥锁。</p>
+<p>虽然代码量不大，但为了在保证数据一致性的同时兼顾系统性能，我重点解决了以下四个问题：</p>
+<h3 id="1-锁粒度的优化：从方法锁到对象锁"><a href="#1-锁粒度的优化：从方法锁到对象锁" class="headerlink" title="1. 锁粒度的优化：从方法锁到对象锁"></a>1. 锁粒度的优化：从方法锁到对象锁</h3><p>初步方案：直接在 Service 的方法上添加 synchronized 关键字。</p>
+<p>存在问题：这样做会将锁的范围扩大到整个方法，锁的对象是 this（当前 Service 实例）。这意味着所有用户（无论 ID 是否相同）在抢购时都需要排队，将并发操作变成了完全的串行操作，系统吞吐量极低。</p>
+<p>优化实现：缩小锁的范围，只锁当前用户的 ID。</p>
+<p>我将锁改为 synchronized(userId) 代码块。这样，只有 userId 相同的并发请求才会互斥排队，不同用户的请求可以并行处理，极大提升了并发性能。</p>
+<h3 id="2-锁对象的唯一性：String-intern-的应用"><a href="#2-锁对象的唯一性：String-intern-的应用" class="headerlink" title="2. 锁对象的唯一性：String.intern() 的应用"></a>2. 锁对象的唯一性：String.intern() 的应用</h3><p>技术难点：userId 是 Long 类型，将其转换为 String 作为锁对象时，Java 每次都会在堆内存中创建一个新的 String 对象。即便两个请求的 userId 值都是 1001，但在内存地址上它们是两个不同的对象。synchronized 判定为不同的锁，导致互斥失效。</p>
+<p>解决方案：使用 userId.toString().intern()。</p>
+<p>.intern() 方法会强制去 Java 的字符串常量池中查找。如果池中已存在该值的字符串，则返回池中的对象引用。这确保了只要 ID 值相同，获取到的锁对象内存地址就一定是相同的，从而保证了锁的有效性。</p>
+<h3 id="3-事务与锁的边界问题（关键点）"><a href="#3-事务与锁的边界问题（关键点）" class="headerlink" title="3. 事务与锁的边界问题（关键点）"></a>3. 事务与锁的边界问题（关键点）</h3><p>潜在 Bug：如果将 synchronized 代码块写在带有 @Transactional 注解的事务方法内部，会存在数据不一致风险。</p>
+<p>时序分析：</p>
 <ol>
-<li><strong>在 GitHub 新建仓库 B</strong>：<ul>
-<li>仓库名：<code>blog-imgs</code></li>
-<li>权限：Public</li>
-<li><strong>勾选 “Add a README file”</strong>。</li>
-</ul>
+<li><p>线程 A 执行完业务逻辑，释放锁。</p>
 </li>
-<li><strong>获取 Token</strong>：<ul>
-<li>GitHub -&gt; Settings -&gt; Developer settings -&gt; Personal access tokens (classic)。</li>
-<li>Generate new token -&gt; 勾选 <strong><code>repo</code></strong> -&gt; 生成并<strong>复制 Token</strong>。</li>
-</ul>
+<li><p><strong>此时 Spring 的事务尚未提交</strong>（事务提交通常在方法结束后的 AOP 切面中完成），数据库中暂无数据。</p>
+</li>
+<li><p>就在“锁释放”与“事务提交”之间的时间差内，线程 B 获取到锁，查询数据库。</p>
+</li>
+<li><p>由于 A 未提交，B 查到的依然是“未购买”，B 继续下单，导致并发问题。</p>
+<p>解决方案：扩大锁的范围，将其包裹在事务方法之外。</p>
+<p>在调用事务方法之前先加锁，确保只有当事务完全提交之后，锁才会被释放，后续线程才能进入。</p>
 </li>
 </ol>
-<p>安装 PicGo 并修复损坏提示</p>
-<ol>
-<li><p><strong>安装</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install --cask picgo</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>修复“应用已损坏”</strong> ：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo xattr -rd com.apple.quarantine /Applications/PicGo.app</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212622352.png" alt="image-20251121212622352"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212944214.png" alt="image-20251121212944214"></p>
-<p>Typora 接入</p>
-<ol>
-<li><p>打开 Typora -&gt; 设置 -&gt; 图像。</p>
-</li>
-<li><p><strong>插入图片时</strong>：选择“上传图片”。</p>
-</li>
-<li><p><strong>上传服务</strong>：选择 <code>PicGo.app</code>。</p>
-</li>
-<li><p>点击 <strong>“验证图片上传选项”</strong> 看到绿色的 <strong>Successfully</strong> 即可</p>
-<p><img src="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/image-20251121212714270.png" alt="image-20251121212714270"></p>
-</li>
-</ol>
-<h2 id="标准日常写作流程"><a href="#标准日常写作流程" class="headerlink" title="标准日常写作流程"></a>标准日常写作流程</h2><p><strong>新建</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~/Documents/my-blog</span><br><span class="line">hexo new &quot;文章标题&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="4-Spring-事务失效的修复（AOP-代理）"><a href="#4-Spring-事务失效的修复（AOP-代理）" class="headerlink" title="4. Spring 事务失效的修复（AOP 代理）"></a>4. Spring 事务失效的修复（AOP 代理）</h3><p>引入问题：将锁移到事务方法外部后，变成了“普通方法调用事务方法”。由于这是在同一个类内部直接调用同类的另一个方法（this.xxx()），请求没有经过 Spring 的 AOP 代理类，被调用方法的 <code>@Transactional</code> 也就失效了，因为它是靠代理生效的</p>
+<p>解决方案：</p>
+<p>引入 AspectJ 依赖，通过 AopContext.currentProxy() 获取当前的代理对象，利用代理对象调用事务方法，确保事务切面生效。</p>
+<p><strong>最终代码逻辑抽象</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 入口方法（无事务）</span><br><span class="line">public void seckillVoucher(Long userId) &#123;</span><br><span class="line">    // 锁住特定用户，使用 intern 确保锁对象唯一</span><br><span class="line">    synchronized(userId.toString().intern()) &#123;</span><br><span class="line">        // 获取代理对象，防止事务失效</span><br><span class="line">        IVoucherOrderService proxy = (IVoucherOrderService) AopContext.currentProxy();</span><br><span class="line">        // 通过代理对象调用事务方法</span><br><span class="line">        proxy.createVoucherOrder(userId);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 事务方法</span><br><span class="line">@Transactional</span><br><span class="line">public void createVoucherOrder(Long userId) &#123;</span><br><span class="line">    // 1. 查询订单是否存在</span><br><span class="line">    // 2. 扣减库存</span><br><span class="line">    // 3. 创建订单</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><strong>写作</strong>：</p>
-<ul>
-<li>用 Typora 打开 <code>source/_posts/文章标题.md</code>。</li>
-<li><strong>截图 -&gt; 粘贴 (自动上传)</strong> -&gt; 写字 -&gt; 保存。</li>
+<h2 id="三、-集群架构下的失效分析"><a href="#三、-集群架构下的失效分析" class="headerlink" title="三、 集群架构下的失效分析"></a>三、 集群架构下的失效分析</h2><p>随着业务量增长，我们将服务升级为集群架构（利用 Nginx 负载均衡，部署了两个节点：8081 和 8082）。</p>
+<p>在集群模式下进行测试时，发现上述 <code>synchronized</code> 方案<strong>彻底失效</strong>。同一个用户依然可以在两台服务器上重复下单。</p>
+<h3 id="失效的根本原因：JVM-内存隔离"><a href="#失效的根本原因：JVM-内存隔离" class="headerlink" title="失效的根本原因：JVM 内存隔离"></a>失效的根本原因：JVM 内存隔离</h3><ul>
+<li><strong>节点 8081</strong>：是一个独立的 Java 进程，拥有独立的堆内存空间。它的 <code>synchronized</code> 锁维护在自己的对象头（Object Header）和监视器（Monitor）中。</li>
+<li><strong>节点 8082</strong>：是另一个独立的 Java 进程，拥有另一块堆内存。</li>
+<li><strong>互不可见</strong>：当 Nginx 将同一个用户的两个请求分别分发到 8081 和 8082 时，两个节点都检查自己的内存，发现“没有锁”，于是同时执行业务。</li>
 </ul>
-<p><strong>预览</strong> ：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-
-<p><strong>发布</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo cl &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
+<p><strong>结论</strong>：Java 原生的锁机制（<code>synchronized</code>&#x2F;<code>Lock</code>）只能解决<strong>单进程</strong>内的并发问题，无法解决<strong>跨进程</strong>（多节点）的并发问题。</p>
+<h2 id="四、-最终演进：分布式锁"><a href="#四、-最终演进：分布式锁" class="headerlink" title="四、 最终演进：分布式锁"></a>四、 最终演进：分布式锁</h2><p>为了解决集群环境下的并发安全问题，我们需要将锁的控制权从 JVM 内存中移出，存储在一个所有服务节点都能访问的<strong>公共存储组件</strong>中。</p>
+<p>本项目引入了 <strong>Redis</strong> 来实现分布式锁。</p>
+<h3 id="1-核心原理"><a href="#1-核心原理" class="headerlink" title="1. 核心原理"></a>1. 核心原理</h3><p>利用 Redis 的 <code>SETNX</code> (SET if Not eXists) 命令。该命令具有原子性：只有当 Key 不存在时才能写入成功。</p>
+<ul>
+<li><strong>获取锁</strong>：所有节点在执行业务前，先尝试向 Redis 写入一个特定的 Key（如 <code>lock:order:userId</code>）。<ul>
+<li>写入成功（返回 1）：视为获取锁成功，执行业务。</li>
+<li>写入失败（返回 0）：视为获取锁失败，说明其他节点正在处理该用户的请求，当前请求由于互斥被拦截。</li>
+</ul>
+</li>
+<li><strong>释放锁</strong>：业务执行完毕后，删除该 Key。</li>
+</ul>
+<h3 id="2-架构转变"><a href="#2-架构转变" class="headerlink" title="2. 架构转变"></a>2. 架构转变</h3><ul>
+<li><strong>Before (单体)</strong>：线程抢夺的是 <strong>JVM 堆内存</strong> 中的对象监视器。</li>
+<li><strong>After (集群)</strong>：线程抢夺的是 <strong>Redis</strong> 中的唯一 Key。</li>
+</ul>
+<p>通过这种方式，我们实现了跨 JVM 进程的互斥控制，无论架构扩展到多少个节点，同一用户的操作都必须经过 Redis 的统一排队，解决了集群下的“一人一单”问题。</p>
+<h2 id="五、-总结"><a href="#五、-总结" class="headerlink" title="五、 总结"></a>五、 总结</h2><p>该功能的实现有以下技术点：</p>
+<ol>
+<li><strong>并发性能优化</strong>：理解锁粒度对吞吐量的影响，避免盲目加锁。</li>
+<li><strong>JVM 内存机制</strong>：通过 <code>intern()</code> 解决了对象引用导致的锁失效问题。</li>
+<li><strong>Spring 源码原理</strong>：深入理解了 Spring 事务的生效边界（Transaction）与动态代理（AOP）的调用机制。</li>
+<li><strong>分布式架构思维</strong>：清晰认识到本地锁在集群环境下的局限性，并能够根据业务场景引入 Redis 分布式锁解决跨进程并发问题。</li>
+</ol>
 
     </article>
     <!-- license -->
         <div class="license-wrapper">
             <p>Author：<a href="https://shaned711.github.io">ShaneD711</a>
-            <p>Link：<a href="https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/</a>
-            <p>Publish date：<a href="https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">November 21st 2025, 8:31:38 pm</a>
-            <p>Update date：<a href="https://shaned711.github.io/2025/11/21/Typora-PicGo-%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0-Hexo-%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">November 21st 2025, 9:33:11 pm</a>
+            <p>Link：<a href="https://shaned711.github.io/2025/12/17/Redis%E5%AE%9E%E6%88%98-%E5%8D%95%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E4%B8%80%E4%BA%BA%E4%B8%80%E5%8D%95%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/">https://shaned711.github.io/2025/12/17/Redis%E5%AE%9E%E6%88%98-%E5%8D%95%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E4%B8%80%E4%BA%BA%E4%B8%80%E5%8D%95%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/</a>
+            <p>Publish date：<a href="https://shaned711.github.io/2025/12/17/Redis%E5%AE%9E%E6%88%98-%E5%8D%95%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E4%B8%80%E4%BA%BA%E4%B8%80%E5%8D%95%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/">December 17th 2025, 3:56:06 pm</a>
+            <p>Update date：<a href="https://shaned711.github.io/2025/12/17/Redis%E5%AE%9E%E6%88%98-%E5%8D%95%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E4%B8%80%E4%BA%BA%E4%B8%80%E5%8D%95%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/">December 17th 2025, 4:08:45 pm</a>
             <p>License：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     <!-- paginator -->
     <ul class="post-paginator">
         <li class="next">
-                <div class="nextSlogan">Next Post</div>
-                <a href="/2025/11/24/%E8%A7%A3%E5%86%B3idea%E9%94%99%E8%AF%AF%E6%8F%90%E7%A4%BA-%E6%97%A0%E6%B3%95%E8%A7%A3%E6%9E%90-%E8%A1%A8%E5%90%8D/" title="解决idea错误提示:无法解析'表名'">
-                    <div class="nextTitle">解决idea错误提示:无法解析'表名'</div>
-                </a>
         </li>
         <li class="previous">
                 <div class="prevSlogan">Previous Post</div>
-                <a href="/2025/11/21/hello-world/" title="Hello World">
-                    <div class="prevTitle">Hello World</div>
+                <a href="/2025/12/14/Redis%E5%AE%9E%E6%88%98-%E5%88%A9%E7%94%A8%E9%80%BB%E8%BE%91%E8%BF%87%E6%9C%9F%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/" title="Redis实战: 利用逻辑过期解决缓存击穿">
+                    <div class="prevTitle">Redis实战: 利用逻辑过期解决缓存击穿</div>
                 </a>
         </li>
     </ul>
@@ -600,7 +571,7 @@
                 <div class="toc-catalog">
                     <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
                 </div>
-                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">准备工作：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85-Node-js-Git"><span class="toc-number">2.</span> <span class="toc-text">基础环境安装 (Node.js &amp; Git)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA-Hexo-%E5%8D%9A%E5%AE%A2%E4%B8%BB%E4%BD%93"><span class="toc-number">3.</span> <span class="toc-text">搭建 Hexo 博客主体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5-GitHub-%E4%BB%93%E5%BA%93"><span class="toc-number">4.</span> <span class="toc-text">连接 GitHub 仓库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-PicGo-%E5%9B%BE%E5%BA%8A"><span class="toc-number">5.</span> <span class="toc-text">配置 PicGo 图床</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E6%97%A5%E5%B8%B8%E5%86%99%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">6.</span> <span class="toc-text">标准日常写作流程</span></a></li></ol>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81-%E4%B8%9A%E5%8A%A1%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">一、 业务背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81-%E5%8D%95%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">二、 单体架构下的解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%94%81%E7%B2%92%E5%BA%A6%E7%9A%84%E4%BC%98%E5%8C%96%EF%BC%9A%E4%BB%8E%E6%96%B9%E6%B3%95%E9%94%81%E5%88%B0%E5%AF%B9%E8%B1%A1%E9%94%81"><span class="toc-number">2.1.</span> <span class="toc-text">1. 锁粒度的优化：从方法锁到对象锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%94%81%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%94%AF%E4%B8%80%E6%80%A7%EF%BC%9AString-intern-%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">2.2.</span> <span class="toc-text">2. 锁对象的唯一性：String.intern() 的应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%94%81%E7%9A%84%E8%BE%B9%E7%95%8C%E9%97%AE%E9%A2%98%EF%BC%88%E5%85%B3%E9%94%AE%E7%82%B9%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">3. 事务与锁的边界问题（关键点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Spring-%E4%BA%8B%E5%8A%A1%E5%A4%B1%E6%95%88%E7%9A%84%E4%BF%AE%E5%A4%8D%EF%BC%88AOP-%E4%BB%A3%E7%90%86%EF%BC%89"><span class="toc-number">2.4.</span> <span class="toc-text">4. Spring 事务失效的修复（AOP 代理）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81-%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E5%A4%B1%E6%95%88%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">三、 集群架构下的失效分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E6%95%88%E7%9A%84%E6%A0%B9%E6%9C%AC%E5%8E%9F%E5%9B%A0%EF%BC%9AJVM-%E5%86%85%E5%AD%98%E9%9A%94%E7%A6%BB"><span class="toc-number">3.1.</span> <span class="toc-text">失效的根本原因：JVM 内存隔离</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81-%E6%9C%80%E7%BB%88%E6%BC%94%E8%BF%9B%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">4.</span> <span class="toc-text">四、 最终演进：分布式锁</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86"><span class="toc-number">4.1.</span> <span class="toc-text">1. 核心原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%9E%B6%E6%9E%84%E8%BD%AC%E5%8F%98"><span class="toc-number">4.2.</span> <span class="toc-text">2. 架构转变</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81-%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">五、 总结</span></a></li></ol>
             </div>
         <!-- sidebar -->
         <div class="sidebar sidebar-hide">
