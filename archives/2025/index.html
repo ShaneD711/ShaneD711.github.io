@@ -399,6 +399,27 @@
                 <main class="main index-page">
             
         <article class="index-post">
+            <a class="abstract-title" href="/2025/12/19/Redis-%E5%AE%9E%E6%88%98%EF%BC%9A%E4%BB%8E%E9%9B%B6%E6%89%8B%E5%86%99%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%88%E8%AF%AF%E5%88%A0%E9%97%AE%E9%A2%98%E4%B8%8E-Lua-%E8%84%9A%E6%9C%AC%E4%BC%98%E5%8C%96%EF%BC%89/">
+                <span class="abstract-title-text">Redis 实战：从零手写分布式锁（误删问题与 Lua 脚本优化）</span>
+            </a>
+            <div class="abstract-content">
+                Redis 实战：从零手写分布式锁（误删问题与 Lua 脚本优化）在单体架构中，我们习惯使用 synchronized 或 Lock 来解决并发安全问题。但在分布式集群架构下，不同的服务运行在不同的 JVM 中，本地锁也就失效了。
+本文将复现如何基于 Redis 实现一个分布式锁，并一步步解决死锁、误删、原子性等经典问题。
+一、 初级版本：利用 SETNX 实现互斥Redis 的 SETNX (Set if Not Exists) 命令天生具备互斥性：只有 Key 不存在时才能设置成功。
+为了防止获取锁的服务器宕机导致锁永远无法释放（死锁），我们需要在使用 SETNX 的同时设置过期时间...
+            </div>
+            <!-- read more -->
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2025/12/19">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2025/12/19</span>
+                </div>
+                <!-- tags -->
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+            
+        <article class="index-post">
             <a class="abstract-title" href="/2025/12/17/Redis%E5%AE%9E%E6%88%98-%E5%8D%95%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E4%B8%80%E4%BA%BA%E4%B8%80%E5%8D%95%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/">
                 <span class="abstract-title-text">Redis实战: “一人一单”功能的实现逻辑与从单体到集群的并发问题</span>
             </a>
@@ -622,29 +643,10 @@ SQL 代码（MyBatis XML 或 @Select 注解）本身没有语法错误，在数�
             </div>
         </article>
         <div class="index-post-divider"></div>
-            
-        <article class="index-post">
-            <a class="abstract-title" href="/2025/11/21/hello-world/">
-                <span class="abstract-title-text">Hello World</span>
-            </a>
-            <div class="abstract-content">
-                Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post1$ hexo new &quot;My New Post&quot;
-
-More info: Writing
-Run server1$ hexo ...
-            </div>
-            <!-- read more -->
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2025/11/21">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2025/11/21</span>
-                </div>
-                <!-- tags -->
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
     <!-- paginator  -->
+        <nav class="page-nav">
+            <span class="page-number current">1</span><a class="page-number" href="/archives/2025/page/2/">2</a><a class="extend next" rel="next" href="/archives/2025/page/2/">NEXT &gt;</a>
+        </nav>
 </main>
 
                 <!-- profile -->
@@ -689,15 +691,20 @@ Run server1$ hexo ...
         
         
         
+        
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 10
+        Total : 11
         </div>
         <!-- search  -->
     </div>
     <div class="post-archive">
             <div class="archive-year"> 2025 </div>
             <ul class="year-list">
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/19</span>
+            <a class="archive-post-title" href="/2025/12/19/Redis-%E5%AE%9E%E6%88%98%EF%BC%9A%E4%BB%8E%E9%9B%B6%E6%89%8B%E5%86%99%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%88%E8%AF%AF%E5%88%A0%E9%97%AE%E9%A2%98%E4%B8%8E-Lua-%E8%84%9A%E6%9C%AC%E4%BC%98%E5%8C%96%EF%BC%89/">Redis 实战：从零手写分布式锁（误删问题与 Lua 脚本优化）</a>
+        </li>
         <li class="archive-post-item">
             <span class="archive-post-date">12/17</span>
             <a class="archive-post-title" href="/2025/12/17/Redis%E5%AE%9E%E6%88%98-%E5%8D%95%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E4%B8%80%E4%BA%BA%E4%B8%80%E5%8D%95%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/">Redis实战: “一人一单”功能的实现逻辑与从单体到集群的并发问题</a>
