@@ -10,21 +10,21 @@
     <meta name="copyright" content="ShaneD711">
         <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     <meta name="description" content="">
-    <meta name="description" content="1. 背景与问题在无状态的 HTTP 协议下，Web 应用通常使用 Session 或 Token 机制来维持用户的登录状态。在 Spring Boot 后端开发中，面临两个核心问题：  统一校验：如何在请求到达业务逻辑之前，统一拦截未登录请求，避免在每个 Controller 方法中重复编写校验代码？ 上下文共享：在 Controller、Service 甚至 Dao 层中，如何优雅地获取当前登">
+    <meta name="description" content="1. 问题背景在前端页面上传图片时，接口直接返回 500 Internal Server Error。 开发环境：macOS (Apple Silicon) &#x2F; Spring Boot &#x2F; Nginx 1.29 业务场景：前端通过 Nginx 反向代理上传图片到后端服务器。 前端请求地址：http:&#x2F;&#x2F;localhost:8080&#x2F;api&#x2F;upload&#x2F;blog (Nginx">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spring Boot 实战：基于拦截器与 ThreadLocal 的用户登录校验">
-<meta property="og:url" content="https://shaned711.github.io/2025/12/09/Spring-Boot-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%8B%A6%E6%88%AA%E5%99%A8%E4%B8%8E-ThreadLocal-%E7%9A%84%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95%E6%A0%A1%E9%AA%8C/index.html">
+<meta property="og:title" content="解决Nginx反向代理图片上传报500错误">
+<meta property="og:url" content="https://shaned711.github.io/2025/12/23/%E8%A7%A3%E5%86%B3Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E6%8A%A5500%E9%94%99%E8%AF%AF/index.html">
 <meta property="og:site_name" content="ShaneD711&#39;s Blog">
-<meta property="og:description" content="1. 背景与问题在无状态的 HTTP 协议下，Web 应用通常使用 Session 或 Token 机制来维持用户的登录状态。在 Spring Boot 后端开发中，面临两个核心问题：  统一校验：如何在请求到达业务逻辑之前，统一拦截未登录请求，避免在每个 Controller 方法中重复编写校验代码？ 上下文共享：在 Controller、Service 甚至 Dao 层中，如何优雅地获取当前登">
+<meta property="og:description" content="1. 问题背景在前端页面上传图片时，接口直接返回 500 Internal Server Error。 开发环境：macOS (Apple Silicon) &#x2F; Spring Boot &#x2F; Nginx 1.29 业务场景：前端通过 Nginx 反向代理上传图片到后端服务器。 前端请求地址：http:&#x2F;&#x2F;localhost:8080&#x2F;api&#x2F;upload&#x2F;blog (Nginx">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2025-12-09T08:56:52.000Z">
-<meta property="article:modified_time" content="2025-12-09T09:08:25.340Z">
+<meta property="article:published_time" content="2025-12-23T06:32:07.000Z">
+<meta property="article:modified_time" content="2025-12-23T07:09:44.958Z">
 <meta property="article:author" content="ShaneD711">
 <meta name="twitter:card" content="summary">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="icon" href="https://cdn.jsdelivr.net/gh/ShaneD711/blog-imgs@main/img/Icons8-Windows-8-Logos-Google-Blog-Search.512.png">
-    <title>Spring Boot 实战：基于拦截器与 ThreadLocal 的用户登录校验 · null</title>
+    <title>解决Nginx反向代理图片上传报500错误 · null</title>
     <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
 /* This file is meant as a standalone workflow for
 - testing support for link[rel=preload]
@@ -242,7 +242,7 @@
             <a href="/">ShaneD711&#39;s Blog.</a>
         </div>
         <div class="post-title header-element">
-            <a href="#" class="post-name">Spring Boot 实战：基于拦截器与 ThreadLocal 的用户登录校验</a>
+            <a href="#" class="post-name">解决Nginx反向代理图片上传报500错误</a>
         </div>
     </div>
 </header>
@@ -269,7 +269,7 @@
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
-                Spring Boot 实战：基于拦截器与 ThreadLocal 的用户登录校验
+                解决Nginx反向代理图片上传报500错误
             <!-- 404 -->
         </h1>
         <!-- 副标题 -->
@@ -287,7 +287,7 @@
                 <div class="post-intro-meta">
                     <!-- 撰写日期 -->
                     <span class="iconfont-archer post-intro-calander">&#xe676;</span>
-                    <span class="post-intro-time">2025/12/09</span>
+                    <span class="post-intro-time">2025/12/23</span>
                     <!-- busuanzi -->
                         <span id="busuanzi_container_page_pv" class="busuanzi-pv">
                             <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
@@ -439,77 +439,95 @@
             <div class="container container-unloaded">
                 <main class="main post-page">
     <article class="article-entry">
-        <h2 id="1-背景与问题"><a href="#1-背景与问题" class="headerlink" title="1. 背景与问题"></a>1. 背景与问题</h2><p>在无状态的 HTTP 协议下，Web 应用通常使用 <code>Session</code> 或 <code>Token</code> 机制来维持用户的登录状态。在 Spring Boot 后端开发中，面临两个核心问题：</p>
-<ol>
-<li><strong>统一校验</strong>：如何在请求到达业务逻辑之前，统一拦截未登录请求，避免在每个 Controller 方法中重复编写校验代码？</li>
-<li><strong>上下文共享</strong>：在 Controller、Service 甚至 Dao 层中，如何优雅地获取当前登录用户的信息，而不需要层层传递 <code>User</code> 对象参数？</li>
-</ol>
-<p> 这里介绍登录 + 拦截器 (Interceptor) + 线程本地变量 (ThreadLocal)” </p>
-<h2 id="2-架构设计"><a href="#2-架构设计" class="headerlink" title="2. 架构设计"></a>2. 架构设计</h2><p>该方案的流程如下：</p>
-<ol>
-<li><strong>登录接口</strong>：负责认证身份，并将用户信息存入 <strong>HttpSession</strong>。</li>
-<li><strong>拦截器 (<code>preHandle</code>)</strong>：在请求进入 Controller 之前拦截。校验 Session 中是否存在用户信息。<ul>
-<li>若存在：将用户信息读取并存入当前线程的 <strong>ThreadLocal</strong> 中，放行。</li>
-<li>若不存在：拦截请求，返回 401 状态码。</li>
+        <h2 id="1-问题背景"><a href="#1-问题背景" class="headerlink" title="1. 问题背景"></a>1. 问题背景</h2><p>在前端页面上传图片时，接口直接返回 <strong>500 Internal Server Error</strong>。</p>
+<p><strong>开发环境</strong>：macOS (Apple Silicon) &#x2F; Spring Boot &#x2F; Nginx 1.29</p>
+<p><strong>业务场景</strong>：前端通过 Nginx 反向代理上传图片到后端服务器。</p>
+<p>前端请求地址：<code>http://localhost:8080/api/upload/blog</code> (Nginx 监听端口)</p>
+<p>后端真实地址：<code>http://localhost:8081/upload/blog</code> (Spring Boot 服务端口)</p>
+<h2 id="2-故障现象"><a href="#2-故障现象" class="headerlink" title="2. 故障现象"></a>2. 故障现象</h2><p>第一反应是去检查 IDEA 控制台的 Spring Boot 日志。<strong>然而后端控制台静悄悄的，没有任何请求进入的痕迹，也没有任何报错日志。</strong></p>
+<p>这意味着：请求在到达 Controller 之前就已经“暴毙”了。</p>
+<h2 id="3-排查过程"><a href="#3-排查过程" class="headerlink" title="3. 排查过程"></a>3. 排查过程</h2><h3 id="3-1-控制变量法"><a href="#3-1-控制变量法" class="headerlink" title="3.1 控制变量法"></a>3.1 控制变量法</h3><p>为了确定故障节点，我决定绕过 Nginx，直接对后端服务发起请求。</p>
+<ul>
+<li><p>测试 A（直连后端）：</p>
+<p>使用 Apifox 直接请求 <a target="_blank" rel="noopener" href="http://localhost:8081/upload/blog%E3%80%82">http://localhost:8081/upload/blog。</a></p>
+<ul>
+<li><strong>结果</strong>：上传成功，图片正常保存，后端日志正常打印。</li>
+<li><strong>推论</strong>：Java 后端代码逻辑无误，文件保存路径及权限配置正确。</li>
 </ul>
 </li>
-<li><strong>业务层 (Controller&#x2F;Service)</strong>：需要用户信息时，直接从 <strong>ThreadLocal</strong> 中获取，无需依赖 Session API。</li>
-<li><strong>拦截器 (<code>afterCompletion</code>)</strong>：请求结束，响应返回前，<strong>移除 ThreadLocal 中的用户信息</strong>，防止内存泄漏。</li>
-</ol>
-<h2 id="3-代码实现步骤"><a href="#3-代码实现步骤" class="headerlink" title="3. 代码实现步骤"></a>3. 代码实现步骤</h2><h3 id="3-1-封装-ThreadLocal-工具类-UserHolder"><a href="#3-1-封装-ThreadLocal-工具类-UserHolder" class="headerlink" title="3.1 封装 ThreadLocal 工具类 (UserHolder)"></a>3.1 封装 ThreadLocal 工具类 (<code>UserHolder</code>)</h3><p>为了在同一线程内共享数据，我们需要封装一个基于 <code>ThreadLocal</code> 的工具类。它充当了<strong>线程内全局容器</strong>的角色。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class UserHolder &#123;</span><br><span class="line">    // 使用 ThreadLocal 保存用户信息，UserDTO 为脱敏后的用户对象</span><br><span class="line">    private static final ThreadLocal&lt;UserDTO&gt; tl = new ThreadLocal&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    // 保存用户</span><br><span class="line">    public static void saveUser(UserDTO user)&#123;</span><br><span class="line">        tl.set(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 获取用户</span><br><span class="line">    public static UserDTO getUser()&#123;</span><br><span class="line">        return tl.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 移除用户（防止内存泄漏的关键）</span><br><span class="line">    public static void removeUser()&#123;</span><br><span class="line">        tl.remove();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-2-自定义登录拦截器-LoginInterceptor"><a href="#3-2-自定义登录拦截器-LoginInterceptor" class="headerlink" title="3.2 自定义登录拦截器 (LoginInterceptor)"></a>3.2 自定义登录拦截器 (<code>LoginInterceptor</code>)</h3><p>拦截器实现 <code>HandlerInterceptor</code> 接口，负责“校验”和“上下文传递”。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public class LoginInterceptor implements HandlerInterceptor &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception &#123;</span><br><span class="line">        // 1. 获取 Session</span><br><span class="line">        HttpSession session = request.getSession();</span><br><span class="line">        </span><br><span class="line">        // 2. 获取 Session 中的用户</span><br><span class="line">        Object user = session.getAttribute(&quot;user&quot;);</span><br><span class="line">        </span><br><span class="line">        // 3. 校验用户是否存在</span><br><span class="line">        if (user == null) &#123;</span><br><span class="line">            // 4. 不存在，拦截，设置状态码 401 (未授权)</span><br><span class="line">            response.setStatus(401);</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        // 5. 存在，将用户信息保存到 ThreadLocal</span><br><span class="line">        // 这一步实现了从 Web 层 (Session) 到 业务层 (ThreadLocal) 的状态转移</span><br><span class="line">        UserHolder.saveUser((UserDTO) user);</span><br><span class="line">        </span><br><span class="line">        // 6. 放行</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception &#123;</span><br><span class="line">        // 7. 必须移除用户，避免线程池复用导致的“数据串号”和内存泄漏</span><br><span class="line">        UserHolder.removeUser();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-3-注册拦截器-MvcConfig"><a href="#3-3-注册拦截器-MvcConfig" class="headerlink" title="3.3 注册拦截器 (MvcConfig)"></a>3.3 注册拦截器 (<code>MvcConfig</code>)</h3><p>通过实现 <code>WebMvcConfigurer</code> 接口，将自定义拦截器注册到 Spring MVC 的拦截链中，并配置拦截路径。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class MvcConfig implements WebMvcConfigurer &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void addInterceptors(InterceptorRegistry registry) &#123;</span><br><span class="line">        registry.addInterceptor(new LoginInterceptor())</span><br><span class="line">                .excludePathPatterns(</span><br><span class="line">                        &quot;/user/code&quot;,   // 发送验证码</span><br><span class="line">                        &quot;/user/login&quot;,  // 登录接口</span><br><span class="line">                        &quot;/blog/hot&quot;,    // 热门博客</span><br><span class="line">                        &quot;/shop/**&quot;,     // 店铺详情</span><br><span class="line">                        &quot;/shop-type/**&quot; // 店铺类型</span><br><span class="line">                ).order(1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-4-业务层获取用户信息-user-me"><a href="#3-4-业务层获取用户信息-user-me" class="headerlink" title="3.4 业务层获取用户信息 (/user/me)"></a>3.4 业务层获取用户信息 (<code>/user/me</code>)</h3><p>在 Controller 中，我们不再需要操作 <code>HttpSession</code> 或 <code>HttpServletRequest</code>，直接调用 <code>UserHolder</code> 即可。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(&quot;/me&quot;)</span><br><span class="line">public Result me()&#123;</span><br><span class="line">    // 直接从 ThreadLocal 获取当前请求关联的用户信息</span><br><span class="line">    UserDTO user = UserHolder.getUser();</span><br><span class="line">    return Result.ok(user);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-组件关系"><a href="#4-组件关系" class="headerlink" title="4. 组件关系"></a>4. 组件关系</h2><p>这套机制中，各组件的职责与关系如下：</p>
-<h3 id="4-1-拦截器-Interceptor-与-Session-的关系"><a href="#4-1-拦截器-Interceptor-与-Session-的关系" class="headerlink" title="4.1 拦截器 (Interceptor) 与 Session 的关系"></a>4.1 拦截器 (Interceptor) 与 Session 的关系</h3><ul>
-<li><strong>关系</strong>：<strong>读取者与存储者</strong>。</li>
-<li><strong>解析</strong>：Session 是由 Tomcat 容器管理的服务器内存存储。拦截器作为请求处理的第一道关卡，负责从 Session 中读取状态。拦截器并不产生用户数据，它只是校验 Session 中是否已由登录接口写入了数据。</li>
+<li><p>测试 B（走 Nginx 代理）：</p>
+<p>使用 Apifox 请求 <a target="_blank" rel="noopener" href="http://localhost:8080/api/upload/blog%E3%80%82">http://localhost:8080/api/upload/blog。</a></p>
+<ul>
+<li><strong>结果</strong>：依然报 500 错误。</li>
+<li><strong>推论</strong>：问题百分之百出在 <strong>Nginx 网关层</strong>。</li>
 </ul>
-<h3 id="4-2-拦截器-Interceptor-与-ThreadLocal-的关系"><a href="#4-2-拦截器-Interceptor-与-ThreadLocal-的关系" class="headerlink" title="4.2 拦截器 (Interceptor) 与 ThreadLocal 的关系"></a>4.2 拦截器 (Interceptor) 与 ThreadLocal 的关系</h3><ul>
-<li><strong>关系</strong>：<strong>生产者与容器</strong>。</li>
-<li><strong>解析</strong>：这是本架构最精妙的地方。拦截器在 <code>preHandle</code> 阶段充当“搬运工”，将 Session 中的数据（Web 作用域）复制到 ThreadLocal（线程作用域）。这使得后续的 Service 层代码可以完全脱离 <code>javax.servlet</code> API，实现了业务逻辑与 Web 容器的解耦。</li>
+</li>
 </ul>
-<h3 id="4-3-Controller-Service-与-ThreadLocal-的关系"><a href="#4-3-Controller-Service-与-ThreadLocal-的关系" class="headerlink" title="4.3 Controller&#x2F;Service 与 ThreadLocal 的关系"></a>4.3 Controller&#x2F;Service 与 ThreadLocal 的关系</h3><ul>
-<li><strong>关系</strong>：<strong>消费者与容器</strong>。</li>
-<li><strong>解析</strong>：Controller 或 Service 层完全不需要知道拦截器的存在，也不需要知道数据是从 Session 来的还是 Token 来的。它们只需要信任 <code>UserHolder</code>，认为“只要代码执行到这里，<code>UserHolder</code> 里一定有当前用户”，从而简化了代码逻辑。</li>
-</ul>
-<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h2><p>实现这套<strong>登录校验拦截</strong>机制，本质上是为了解决两个工程化问题：</p>
+<h3 id="3-2-检查-Nginx-配置"><a href="#3-2-检查-Nginx-配置" class="headerlink" title="3.2 检查 Nginx 配置"></a>3.2 检查 Nginx 配置</h3><p>初步怀疑是 client_max_body_size 限制导致，或者是 proxy_pass 的路径重写规则写错了。</p>
+<p>检查 nginx.conf：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> /api/ &#123;</span><br><span class="line">    <span class="attribute">proxy_pass</span> http://webservers/;  <span class="comment"># 路径剥离，逻辑正确</span></span><br><span class="line">    <span class="attribute">client_max_body_size</span> <span class="number">10m</span>;       <span class="comment"># 大小限制已放开</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置看起来没有逻辑硬伤，排除配置语法错误。</p>
+<h3 id="3-3-查看-Nginx-错误日志"><a href="#3-3-查看-Nginx-错误日志" class="headerlink" title="3.3 查看 Nginx 错误日志"></a>3.3 查看 Nginx 错误日志</h3><p>既然是 Nginx 报的 500，那么 Nginx 自身的错误日志一定有记录。在 Mac 终端执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">tail</span> -f /opt/homebrew/var/log/nginx/error.log</span><br></pre></td></tr></table></figure>
+
+<p>再次发起上传请求，终端瞬间捕获到了关键报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2025/12/23 13:51:24 [crit] 60314#0: *29425 open() &quot;/opt/homebrew/var/run/nginx/client_body_temp/0000000026&quot; failed (13: Permission denied), client: 127.0.0.1, server: localhost, request: &quot;POST /api/upload/blog HTTP/1.1&quot;, ...</span><br></pre></td></tr></table></figure>
+
+<p><strong>错误信息</strong>：<code>open() ... client_body_temp/0000000026 failed (13: Permission denied)</code>。</p>
+<h2 id="4-根因分析"><a href="#4-根因分析" class="headerlink" title="4. 根因分析"></a>4. 根因分析</h2><p>为什么上传一个几十 KB 的图片会报“权限拒绝”？</p>
 <ol>
-<li><strong>安全性（Secur11ity）</strong>：通过拦截器实现统一的权限控制，防止未登录用户访问12受保护资源。</li>
-<li><strong>代码解耦（Decoupling）</strong>：利用 <code>ThreadLocal</code> 替代参数传递，使得用户信息可以在同一请求线程的任意位置被访问，极大地提高了代码的可维护性。</li>
+<li><p>Nginx 的请求体缓冲机制：</p>
+<p>Nginx 在处理 POST 请求（尤其是 multipart&#x2F;form-data 类型）时，如果请求体大小超过了内存缓冲区（client_body_buffer_size），或者为了保证传输稳定性，它会将请求体先写入一个临时文件。</p>
+<p>这个临时文件的存放目录就是日志中显示的 client_body_temp。</p>
+</li>
+<li><p>操作系统权限隔离：</p>
+<p>在 macOS (Homebrew 安装) 环境下：</p>
+<ul>
+<li><code>client_body_temp</code> 目录可能是在安装时由 <code>root</code> 或其他高权限用户创建的。</li>
+<li>而 Nginx 的 Worker 进程（实际处理请求的进程）通常是以 <code>nobody</code> 或当前普通用户身份运行的。</li>
+<li><strong>冲突点</strong>：低权限的 Worker 进程试图向高权限的目录写入临时文件 <code>0000000026</code>，被操作系统内核拦截，导致 Nginx 进程处理失败，直接向前端抛出 500 错误。</li>
+</ul>
+</li>
 </ol>
-<p>在后续的分布式演进中（如引入 Redis），我们只需要修改 <strong>登录接口（存 Redis）</strong> 和 <strong>拦截器（查 Redis）</strong> 的逻辑，而业务层获取用户信息的代码（<code>UserHolder.getUser()</code>）完全不需要改动，这体现了良好的架构扩展性。</p>
+<p>这解释了为什么后端 Java 代码没有任何反应——<strong>请求还没走出 Nginx 的大门就已经因为写不了临时盘而崩溃了。</strong></p>
+<h2 id="5-解决方案"><a href="#5-解决方案" class="headerlink" title="5. 解决方案"></a>5. 解决方案</h2><p>找到原因后，解决思路非常清晰：<strong>赋予 Nginx 进程对临时目录的读写权限。</strong></p>
+<h3 id="步骤一："><a href="#步骤一：" class="headerlink" title="步骤一："></a>步骤一：</h3><p>在终端执行以下命令，将 Nginx 运行目录的权限完全放开：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修改 Nginx 运行时目录权限为 777 (读/写/执行)</span></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> -R 777 /opt/homebrew/var/run/nginx/</span><br></pre></td></tr></table></figure>
+
+<h3 id="步骤二：清理旧缓存（可选）"><a href="#步骤二：清理旧缓存（可选）" class="headerlink" title="步骤二：清理旧缓存（可选）"></a>步骤二：清理旧缓存（可选）</h3><p>为了防止残留的错误文件影响，可以清理一下临时目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">rm</span> -rf /opt/homebrew/var/run/nginx/client_body_temp/*</span><br></pre></td></tr></table></figure>
+
+<h3 id="步骤三：重载配置"><a href="#步骤三：重载配置" class="headerlink" title="步骤三：重载配置"></a>步骤三：重载配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<p>执行完上述操作后，再次通过 <code>http://localhost:8080/api/upload/blog</code> 上传图片，问题解决，请求顺利透传至后端。</p>
+<h2 id="6-总结与反思"><a href="#6-总结与反思" class="headerlink" title="6. 总结与反思"></a>6. 总结与反思</h2><p>这次排查经历给我带来了两点重要的技术启示：</p>
+<ol>
+<li><p>不要忽视中间件的日志：</p>
+<p>当后端业务代码没有任何异常日志时，不要死磕代码逻辑。如果链路中存在 Nginx、网关等中间件，必须第一时间去查看中间件的 error.log。日志往往能直接告诉你真相。</p>
+</li>
+<li><p>环境差异与权限意识：</p>
+<p>相比于 Windows 开发环境，Mac 和 Linux 对文件系统权限的管理更加严格。在使用 Nginx、Docker、Redis 等需要落盘的中间件时，必须时刻关注运行用户与目标目录的权限匹配情况。</p>
+</li>
+</ol>
 
     </article>
     <!-- license -->
         <div class="license-wrapper">
             <p>Author：<a href="https://shaned711.github.io">ShaneD711</a>
-            <p>Link：<a href="https://shaned711.github.io/2025/12/09/Spring-Boot-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%8B%A6%E6%88%AA%E5%99%A8%E4%B8%8E-ThreadLocal-%E7%9A%84%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95%E6%A0%A1%E9%AA%8C/">https://shaned711.github.io/2025/12/09/Spring-Boot-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%8B%A6%E6%88%AA%E5%99%A8%E4%B8%8E-ThreadLocal-%E7%9A%84%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95%E6%A0%A1%E9%AA%8C/</a>
-            <p>Publish date：<a href="https://shaned711.github.io/2025/12/09/Spring-Boot-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%8B%A6%E6%88%AA%E5%99%A8%E4%B8%8E-ThreadLocal-%E7%9A%84%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95%E6%A0%A1%E9%AA%8C/">December 9th 2025, 4:56:52 pm</a>
-            <p>Update date：<a href="https://shaned711.github.io/2025/12/09/Spring-Boot-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%9F%BA%E4%BA%8E%E6%8B%A6%E6%88%AA%E5%99%A8%E4%B8%8E-ThreadLocal-%E7%9A%84%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95%E6%A0%A1%E9%AA%8C/">December 9th 2025, 5:08:25 pm</a>
+            <p>Link：<a href="https://shaned711.github.io/2025/12/23/%E8%A7%A3%E5%86%B3Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E6%8A%A5500%E9%94%99%E8%AF%AF/">https://shaned711.github.io/2025/12/23/%E8%A7%A3%E5%86%B3Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E6%8A%A5500%E9%94%99%E8%AF%AF/</a>
+            <p>Publish date：<a href="https://shaned711.github.io/2025/12/23/%E8%A7%A3%E5%86%B3Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E6%8A%A5500%E9%94%99%E8%AF%AF/">December 23rd 2025, 2:32:07 pm</a>
+            <p>Update date：<a href="https://shaned711.github.io/2025/12/23/%E8%A7%A3%E5%86%B3Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E6%8A%A5500%E9%94%99%E8%AF%AF/">December 23rd 2025, 3:09:44 pm</a>
             <p>License：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     <!-- paginator -->
     <ul class="post-paginator">
         <li class="next">
-                <div class="nextSlogan">Next Post</div>
-                <a href="/2025/12/10/Spring-Boot-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%9F%BA%E4%BA%8E-Redis-Token-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/" title="Spring Boot 实战：基于 Redis + Token 实现分布式登录系统">
-                    <div class="nextTitle">Spring Boot 实战：基于 Redis + Token 实现分布式登录系统</div>
-                </a>
         </li>
         <li class="previous">
                 <div class="prevSlogan">Previous Post</div>
-                <a href="/2025/12/03/%E8%A7%A3%E5%86%B3Rocky-Linux-9%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8Root%E7%94%A8%E6%88%B7SSH%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E7%9A%84%E9%97%AE%E9%A2%98/" title="解决Rocky Linux 9无法使用Root用户SSH远程连接的问题">
-                    <div class="prevTitle">解决Rocky Linux 9无法使用Root用户SSH远程连接的问题</div>
+                <a href="/2025/12/19/Redis-%E5%AE%9E%E6%88%98%EF%BC%9A%E4%BB%8E%E9%9B%B6%E6%89%8B%E5%86%99%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%88%E8%AF%AF%E5%88%A0%E9%97%AE%E9%A2%98%E4%B8%8E-Lua-%E8%84%9A%E6%9C%AC%E4%BC%98%E5%8C%96%EF%BC%89/" title="Redis 实战：从零手写分布式锁（误删问题与 Lua 脚本优化）">
+                    <div class="prevTitle">Redis 实战：从零手写分布式锁（误删问题与 Lua 脚本优化）</div>
                 </a>
         </li>
     </ul>
@@ -561,7 +579,7 @@
                 <div class="toc-catalog">
                     <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
                 </div>
-                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%83%8C%E6%99%AF%E4%B8%8E%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">1. 背景与问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">2.</span> <span class="toc-text">2. 架构设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-number">3.</span> <span class="toc-text">3. 代码实现步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%B0%81%E8%A3%85-ThreadLocal-%E5%B7%A5%E5%85%B7%E7%B1%BB-UserHolder"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 封装 ThreadLocal 工具类 (UserHolder)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%99%BB%E5%BD%95%E6%8B%A6%E6%88%AA%E5%99%A8-LoginInterceptor"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 自定义登录拦截器 (LoginInterceptor)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%B3%A8%E5%86%8C%E6%8B%A6%E6%88%AA%E5%99%A8-MvcConfig"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 注册拦截器 (MvcConfig)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E4%B8%9A%E5%8A%A1%E5%B1%82%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF-user-me"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 业务层获取用户信息 (&#x2F;user&#x2F;me)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%BB%84%E4%BB%B6%E5%85%B3%E7%B3%BB"><span class="toc-number">4.</span> <span class="toc-text">4. 组件关系</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E6%8B%A6%E6%88%AA%E5%99%A8-Interceptor-%E4%B8%8E-Session-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 拦截器 (Interceptor) 与 Session 的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E6%8B%A6%E6%88%AA%E5%99%A8-Interceptor-%E4%B8%8E-ThreadLocal-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 拦截器 (Interceptor) 与 ThreadLocal 的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-Controller-Service-%E4%B8%8E-ThreadLocal-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 Controller&#x2F;Service 与 ThreadLocal 的关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">5. 总结</span></a></li></ol>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 问题背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%85%E9%9A%9C%E7%8E%B0%E8%B1%A1"><span class="toc-number">2.</span> <span class="toc-text">2. 故障现象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">3. 排查过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%8E%A7%E5%88%B6%E5%8F%98%E9%87%8F%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 控制变量法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%A3%80%E6%9F%A5-Nginx-%E9%85%8D%E7%BD%AE"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 检查 Nginx 配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%9F%A5%E7%9C%8B-Nginx-%E9%94%99%E8%AF%AF%E6%97%A5%E5%BF%97"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 查看 Nginx 错误日志</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">4. 根因分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">5.</span> <span class="toc-text">5. 解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%80%EF%BC%9A"><span class="toc-number">5.1.</span> <span class="toc-text">步骤一：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4%E4%BA%8C%EF%BC%9A%E6%B8%85%E7%90%86%E6%97%A7%E7%BC%93%E5%AD%98%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="toc-number">5.2.</span> <span class="toc-text">步骤二：清理旧缓存（可选）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%89%EF%BC%9A%E9%87%8D%E8%BD%BD%E9%85%8D%E7%BD%AE"><span class="toc-number">5.3.</span> <span class="toc-text">步骤三：重载配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%80%BB%E7%BB%93%E4%B8%8E%E5%8F%8D%E6%80%9D"><span class="toc-number">6.</span> <span class="toc-text">6. 总结与反思</span></a></li></ol>
             </div>
         <!-- sidebar -->
         <div class="sidebar sidebar-hide">
